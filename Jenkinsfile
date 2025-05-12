@@ -35,6 +35,13 @@ pipeline {
             // This is useful for ensuring that the staging deployment is only triggered when the version file is updated.
             when { changeset "stage_version.txt" }
             steps {
+                    // Requires "SSH Agent" plugin in Jenkins:
+                    // Manage Jenkins → Plugin Manager → Install "SSH Agent"
+                    echo 'Deploy to staging...'
+                    // Note: Make sure the remote user (ubuntu@...) is in the "docker" group
+                    // Run on remote server: sudo usermod -aG docker ubuntu
+                    // Then reconnect SSH or run: newgrp docker
+                    // Without this, you'll get "permission denied" when running docker
                 script {
                     env.ENVIRONMENT = 'staging'
                     env.VERSION = readFile('stage_version.txt').trim()
@@ -42,14 +49,14 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'DB_PASS', passwordVariable: 'DB_PASSWORD', usernameVariable: 'DB_USERNAME')]) {
                     sshagent (credentials: ['ubuntu-frankfurt']) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST_STAGE} \\
-                            "docker pull ${IMAGE_NAME}:${env.VERSION} && \\
-                            docker rm -f myapp && \\
-                            docker run -d --name myapp --restart unless-stopped \\
-                            -e DB_NAME=todo \\
-                            -e DB_USER=${DB_USERNAME} \\
-                            -e DB_PASSWORD=\${DB_PASSWORD} \\
-                            -e DB_HOST=${DB_HOST} \\
+                            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST_STAGE} \
+                            "docker pull ${IMAGE_NAME}:${env.VERSION} && \
+                            docker rm -f myapp && \
+                            docker run -d --name myapp --restart unless-stopped \
+                            -e DB_NAME=todo \
+                            -e DB_USER=${DB_USERNAME} \
+                            -e DB_PASSWORD=${DB_PASSWORD} \
+                            -e DB_HOST=${DB_HOST} \
                             -p 5000:5000 ${IMAGE_NAME}:${env.VERSION}"
                          """
                         }
@@ -63,6 +70,13 @@ pipeline {
             // This is useful for ensuring that the production deployment is only triggered when the version file is updated.
             when { changeset "production_version.txt" }
             steps {
+                    // Requires "SSH Agent" plugin in Jenkins:
+                    // Manage Jenkins → Plugin Manager → Install "SSH Agent"
+                    echo 'Deploy to production...'
+                    // Note: Make sure the remote user (ubuntu@...) is in the "docker" group
+                    // Run on remote server: sudo usermod -aG docker ubuntu
+                    // Then reconnect SSH or run: newgrp docker
+                    // Without this, you'll get "permission denied" when running docker
                 script {
                     env.ENVIRONMENT = 'production'
                     env.VERSION = readFile('production_version.txt').trim()
@@ -70,14 +84,14 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'DB_PASS', passwordVariable: 'DB_PASSWORD', usernameVariable: 'DB_USERNAME')]) {
                     sshagent (credentials: ['ubuntu-frankfurt']) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST_PRODUCTION} \\
-                            "docker pull ${IMAGE_NAME}:${env.VERSION} && \\
-                            docker rm -f myapp && \\
-                            docker run -d --name myapp --restart unless-stopped \\
-                            -e DB_NAME=todo \\
-                            -e DB_USER=${DB_USERNAME} \\
-                            -e DB_PASSWORD=$\{DB_PASSWORD} \\
-                            -e DB_HOST=${DB_HOST} \\
+                            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST_PRODUCTION} \
+                            "docker pull ${IMAGE_NAME}:${env.VERSION} && \
+                            docker rm -f myapp && \
+                            docker run -d --name myapp --restart unless-stopped \
+                            -e DB_NAME=todo \
+                            -e DB_USER=${DB_USERNAME} \
+                            -e DB_PASSWORD=${DB_PASSWORD} \
+                            -e DB_HOST=${DB_HOST} \
                             -p 5000:5000 ${IMAGE_NAME}:${env.VERSION}"
                          """
                         }
