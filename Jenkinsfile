@@ -8,9 +8,8 @@ pipeline {
         REMOTE_HOST_PRODUCTION = '172.31.39.147'
         DB_HOST = '172.31.42.36'
     }
-    
-    stages {
 
+    stages {
         // 🔒 Stage to test that credentials are properly masked in Jenkins logs.
         // Make sure:
         // 1. The "Mask Passwords" plugin is installed (Manage Jenkins → Plugin Manager).
@@ -21,7 +20,6 @@ pipeline {
         // 6. The password should not be echoed or logged outside the withCredentials {} block.
         // 7. Avoid printing the password in any post or error section to ensure masking.
         stage('Test Mask Password') {
-
             steps {
                 echo 'Testing Masked Password Output...'
                 withCredentials([usernamePassword(credentialsId: 'TEST_MASK_PASSWORD', passwordVariable: 'TEST_PASS_PASSWORD', usernameVariable: 'TEST_PASS_USERNAME')]) {                    
