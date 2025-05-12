@@ -33,67 +33,104 @@ pipeline {
         stage('Deploy to staging') {
             when { changeset "stage_version.txt" }
             steps {
-                    // Requires "SSH Agent" plugin in Jenkins:
-                    // Manage Jenkins → Plugin Manager → Install "SSH Agent"
-                    echo 'Deploy to staging...'
-                    // Extract version number from stage_version.txt
-                    script {
-                        def VERSION = readFile('stage_version.txt').trim()
-                        echo "📦 Extracted version from stage_version.txt: ${VERSION}"
-                    }
-                    // Note: Make sure the remote user (ubuntu@...) is in the "docker" group
-                    // Run on remote server: sudo usermod -aG docker ubuntu
-                    // Then reconnect SSH or run: newgrp docker
-                    // Without this, you'll get "permission denied" when running docker
+                script {
+                    env.ENVIRONMENT = 'staging'
+                    env.VERSION = readFile('stage_version.txt').trim()
+                    echo "📦 Extracted version from file: ${env.VERSION}"
                     withCredentials([usernamePassword(credentialsId: 'DB_PASS', passwordVariable: 'DB_PASSWORD', usernameVariable: 'DB_USERNAME')]) {
                     sshagent (credentials: ['ubuntu-frankfurt']) {
                         sh """
                             ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST_STAGE} \\
-                            "docker pull ${IMAGE_NAME}:${VERSION} && \\
-                            docker rm -f myapp || true && \\
+                            "docker pull ${IMAGE_NAME}:${env.VERSION} && \\
+                            docker rm -f myapp && \\
                             docker run -d --name myapp --restart unless-stopped \\
                             -e DB_NAME=todo \\
                             -e DB_USER=${DB_USERNAME} \\
                             -e DB_PASSWORD=\${DB_PASSWORD} \\
                             -e DB_HOST=${DB_HOST} \\
-                            -p 5000:5000 ${IMAGE_NAME}:${VERSION}"
-                        """
-                    }    
-                }                                               
-            }    
-        }  
+                            -p 5000:5000 ${IMAGE_NAME}:${env.VERSION}"
+                         """
+                        }
+                    }
+                }    
+            }
+        }
+
+        stage('Deploy to production') {
+            when { changeset "production_version.txt" }
+            steps {
+                script {
+                    env.ENVIRONMENT = 'production'
+                    env.VERSION = readFile('production_version.txt').trim()
+                    echo "📦 Extracted version from file: ${env.VERSION}"
+                    withCredentials([usernamePassword(credentialsId: 'DB_PASS', passwordVariable: 'DB_PASSWORD', usernameVariable: 'DB_USERNAME')]) {
+                    sshagent (credentials: ['ubuntu-frankfurt']) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST_PRODUCTION} \\
+                            "docker pull ${IMAGE_NAME}:${env.VERSION} && \\
+                            docker rm -f myapp && \\
+                            docker run -d --name myapp --restart unless-stopped \\
+                            -e DB_NAME=todo \\
+                            -e DB_USER=${DB_USERNAME} \\
+                            -e DB_PASSWORD=$\{DB_PASSWORD} \\
+                            -e DB_HOST=${DB_HOST} \\
+                            -p 5000:5000 ${IMAGE_NAME}:${env.VERSION}"
+                         """
+                        }
+                    }
+                }    
+            }
+        }
     }
-    
+        
     post {
-        // Requires "Slack Notification" plugin in Jenkins:
-        // Manage Jenkins → Plugin Manager → Install "Slack Notification"
         failure {
-            slackSend(
-                channel: '#jenkins',
-                color: 'danger',
-                message: "FAILED to deploy version ${VERSION}"
-            )
-            emailext(
-                subject: "${JOB_NAME}.${BUILD_NUMBER} FAILED",
-                mimeType: 'text/html',
-                to: "$email",
-                body: "FAILED to deploy version ${VERSION}"
-            )
+            script {
+                def msg = ''
+                if (env.VERSION && env.ENVIRONMENT) {
+                    msg = "FAILED to deploy ${env.ENVIRONMENT} version ${env.VERSION} "
+                } else {
+                    msg = "FAILED "
+                }
+                
+                slackSend(
+                    channel: '#jenkins',
+                    color: 'danger',
+                    message: msg
+                )
+                
+                emailext(
+                    subject: "${JOB_NAME}.${BUILD_NUMBER} FAILED",
+                    mimeType: 'text/html',
+                    to: "$email",
+                    body: msg
+                )
+            }
         }
 
         success {
-            slackSend(
-                channel: '#jenkins',
-                color: 'good',
-                message: "PASSED to deploy version ${VERSION}, link for remote host stage for checking: http://stage.netaneltodolist.wuaze.com/"
-            )
-            emailext(
-                subject: "${JOB_NAME}.${BUILD_NUMBER} PASSED",
-                mimeType: 'text/html',
-                to: "$email",
-                body: "PASSED to deploy version ${VERSION}, link for remote host stage for checking: http://stage.netaneltodolist.wuaze.com/"
-            )
+            script {
+                def msg = ''
+                if (env.VERSION && env.ENVIRONMENT) {
+                        msg = "success to deploy ${env.ENVIRONMENT} version ${env.VERSION}  http://stage.yp3yp3.online/"
+                } else {
+                        msg = "success"
+                }
+                    
+                
+                slackSend(
+                    channel: '#jenkins',
+                    color: 'good',
+                    message: msg
+                )  
+
+                emailext(
+                    subject: "${JOB_NAME}.${BUILD_NUMBER} PASSED",
+                    mimeType: 'text/html',
+                    to: "$email",
+                    body: msg
+                )
+            }
         }
     }
-}
- 
+}           
