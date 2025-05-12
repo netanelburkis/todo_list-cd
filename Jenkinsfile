@@ -31,6 +31,8 @@ pipeline {
         }
 
         stage('Deploy to staging') {
+            // This stage will only run if the changeset includes the stage_version.txt file.
+            // This is useful for ensuring that the staging deployment is only triggered when the version file is updated.
             when { changeset "stage_version.txt" }
             steps {
                 script {
@@ -57,6 +59,8 @@ pipeline {
         }
 
         stage('Deploy to production') {
+            // This stage will only run if the changeset includes the production_version.txt file.
+            // This is useful for ensuring that the production deployment is only triggered when the version file is updated.
             when { changeset "production_version.txt" }
             steps {
                 script {
