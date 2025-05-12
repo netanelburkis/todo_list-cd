@@ -55,7 +55,7 @@ pipeline {
                             docker run -d --name myapp --restart unless-stopped \\
                             -e DB_NAME=todo \\
                             -e DB_USER=${DB_USERNAME} \\
-                            -e DB_PASSWORD=$\{DB_PASSWORD} \\
+                            -e DB_PASSWORD=\${DB_PASSWORD} \\
                             -e DB_HOST=${DB_HOST} \\
                             -p 5000:5000 ${IMAGE_NAME}:${env.VERSION}'
                          """
@@ -130,7 +130,7 @@ pipeline {
             script {
                 def msg = ''
                 if (env.VERSION && env.ENVIRONMENT) {
-                        msg = "success to deploy ${env.ENVIRONMENT} version ${env.VERSION}  http://stage.yp3yp3.online/"
+                        msg = "success to deploy ${env.ENVIRONMENT} version ${env.VERSION}  http://stage.netaneltodolist.wuaze.com/"
                 } else {
                         msg = "success"
                 }
