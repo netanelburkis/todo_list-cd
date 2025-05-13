@@ -135,7 +135,7 @@ pipeline {
                     if (env.ENVIRONMENT == 'staging') {
                         msg += "🔗 http://stage.netaneltodolist.wuaze.com/"
                     } else if (env.ENVIRONMENT == 'production') {
-                        msg += "🔗 http://netaneltodolist.wuaze.com/"
+                        msg += "🔗 http://bybukris.netaneltodolist.wuaze.com/"
                     }
                 } else {
                     msg = "✅ Success"
