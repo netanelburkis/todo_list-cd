@@ -1,6 +1,7 @@
 # ToDo List - CI/CD Infrastructure
 
 This repository contains the configuration files and deployment scripts necessary to set up and manage the CI/CD infrastructure for the ToDo List application in the repository:  https://github.com/netanelburkis/netanelburkis-netanel_bukris_todo_app_repu.
+
 It supports automated deployment using Jenkins and includes pre-configured scripts for launching servers running Nginx, MySQL, and the Flask-based application.
 
 ---
