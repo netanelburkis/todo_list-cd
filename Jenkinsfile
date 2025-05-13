@@ -130,9 +130,15 @@ pipeline {
             script {
                 def msg = ''
                 if (env.VERSION && env.ENVIRONMENT) {
-                        msg = "success to deploy ${env.ENVIRONMENT} version ${env.VERSION}  http://stage.netaneltodolist.wuaze.com/"
+                    msg = "✅ Success to deploy ${env.ENVIRONMENT} version ${env.VERSION}\n"
+
+                    if (env.ENVIRONMENT == 'staging') {
+                        msg += "🔗 http://stage.netaneltodolist.wuaze.com/"
+                    } else if (env.ENVIRONMENT == 'production') {
+                        msg += "🔗 http://netaneltodolist.wuaze.com/"
+                    }
                 } else {
-                        msg = "success"
+                    msg = "✅ Success"
                 }
                     
                 
