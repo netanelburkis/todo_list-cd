@@ -4,9 +4,16 @@
     state: absent
   with_fileglob:
     - /etc/apt/sources.list.d/docker*.list
+    - /etc/apt/sources.list.d/*docker*.list
   ignore_errors: yes
 
-- name: Remove docker.asc keyring file
+- name: Remove docker entries from /etc/apt/sources.list
+  lineinfile:
+    path: /etc/apt/sources.list
+    regexp: '^deb .*download\.docker\.com.*'
+    state: absent
+
+- name: Remove docker GPG keyring file
   file:
     path: /etc/apt/keyrings/docker.asc
     state: absent
@@ -25,51 +32,6 @@
     autoremove: yes
   ignore_errors: yes
 
-- name: Remove docker entries from /etc/apt/sources.list
-  lineinfile:
-    path: /etc/apt/sources.list
-    regexp: '^deb .*download\.docker\.com.*'
-    state: absent
-
-- name: Debug docker source files found before cleanup
-  command: ls -l /etc/apt/sources.list.d/docker*.list
-  register: docker_source_files
-  ignore_errors: yes
-
-- debug:
-    var: docker_source_files.stdout_lines
-
-- name: Remove all docker related source list files (better catch all)
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_fileglob:
-    - /etc/apt/sources.list.d/docker*.list
-    - /etc/apt/sources.list.d/*docker*.list
-  ignore_errors: yes
-
-- name: Remove all docker related source list files with different extensions
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_fileglob:
-    - /etc/apt/sources.list.d/docker*
-  ignore_errors: yes
-
-- name: Debug docker entries in /etc/apt/sources.list before cleanup
-  command: grep -E '^deb .*download\.docker\.com.*' /etc/apt/sources.list
-  register: docker_lines_in_sources_list
-  ignore_errors: yes
-
-- debug:
-    var: docker_lines_in_sources_list.stdout_lines
-
-- name: Remove docker entries from /etc/apt/sources.list
-  lineinfile:
-    path: /etc/apt/sources.list
-    regexp: '^deb .*download\.docker\.com.*'
-    state: absent
-
 - name: Install dependencies
   apt:
     name:
@@ -81,7 +43,7 @@
     update_cache: yes
 
 - name: Add Docker's GPG key
-  ansible.builtin.shell: |
+  shell: |
     install -m 0755 -d /etc/apt/keyrings
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
     chmod a+r /etc/apt/keyrings/docker.asc
@@ -94,7 +56,7 @@
     content: |
       deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
 
-- name: Update apt cache after adding Docker repo
+- name: Update apt cache
   apt:
     update_cache: yes
 
@@ -109,7 +71,7 @@
     state: latest
     update_cache: yes
 
-- name: Add ubuntu user to docker group
+- name: Add user to docker group
   user:
     name: "{{ user }}"
     groups: docker
