@@ -29,6 +29,48 @@ It supports automated deployment using Jenkins and includes pre-configured scrip
 - `production_version.txt` – A text file containing the current version (commit hash/tag) deployed in the **Production** environment.
 - `stage_version.txt` – A text file with the version currently running in the **Staging** environment.
 
+### 4. Ansible Configuration 🛠️
+This repository also includes Ansible playbooks used for automating the deployment and configuration of the servers required for the ToDo List application.
+
+Ansible helps automate the setup of the servers and the configuration of the application environment. It ensures that all components (e.g., Nginx, MySQL, and the Flask app) are installed and configured consistently across all environments.
+
+How to Use Ansible ⚙️
+Install Ansible (if not already installed):
+
+```bash
+sudo apt install ansible
+```
+Run the Playbooks:
+Ansible playbooks can be used to configure the servers in different environments (e.g., staging, production).
+
+For example, to configure the staging server, run:
+
+```bash
+ansible-playbook -i staging_inventory.ini deploy.yml
+```
+Replace staging_inventory.ini with the appropriate inventory file, and deploy.yml with the playbook you want to run.
+
+Directory Structure:
+
+ansible/ - Contains all Ansible configuration files:
+
+playbooks/ - Contains the main Ansible playbooks (e.g., deploy.yml).
+
+roles/ - Contains Ansible roles for configuring Nginx, MySQL, and the Flask app.
+
+inventories/ - Contains the server inventory files for different environments (e.g., staging_inventory.ini, production_inventory.ini).
+
+Ansible Playbooks 🔧
+deploy.yml: Deploys the application on the target server, including Nginx, MySQL, and the Flask application.
+
+nginx -nginx/tasks-role: Configures Nginx as a reverse proxy for the Flask application.
+
+mysql -db/tasks-role: Installs MySQL, creates a database, and configures a user for the application.
+
+flask_app -app/tasks-role: Sets up the Flask application (with Gunicorn) and optionally uses Docker.
+
+By using these Ansible playbooks, you can easily automate the entire deployment and configuration process for all your environments.
+
 ---
 
 ## How to Use🛠️
