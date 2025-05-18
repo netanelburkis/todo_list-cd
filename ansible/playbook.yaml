@@ -1,0 +1,22 @@
+- hosts: all
+  become: yes
+  roles: [docker]
+
+- hosts: db
+  roles: [db]
+
+- hosts: app
+  roles:
+  - role: app
+    vars:
+      app_tag: "{{ prod_tag }}"
+
+- hosts: stage
+  roles:
+  - role: app
+    vars:
+      app_tag: "{{ stage_tag }}"
+
+# if nginx needed:
+#- hosts: nginx
+#  roles: [nginx]

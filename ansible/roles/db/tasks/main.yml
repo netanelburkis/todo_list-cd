@@ -1,0 +1,19 @@
+- name: run mysql container
+  docker_container:
+    name: mysql
+    image: "{{ db_image }}:{{ db_tag }}"
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ db_root_password }}"
+      MYSQL_DATABASE: "{{ db_name }}"
+      MYSQL_USER: "{{ db_user }}"
+      MYSQL_PASSWORD: "{{ db_password }}"
+    volumes:
+      - sql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports: "3306:3306"
+    state: started
+    restart_policy: always
