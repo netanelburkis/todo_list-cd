@@ -1,6 +1,6 @@
 app_image: netanelbukris/to_do_list
 prod_tag: latest
-stage_tag: latest
+stage_tag: 3
 
 db_image: mysql
 db_tag: "8.0"
