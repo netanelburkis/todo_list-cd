@@ -53,12 +53,13 @@ First, clone this repository to your local machine or server.
 Make sure you have an Ansible installation.
 
 Run the following command to configure the servers for staging:
-
 ```bash
 ansible-playbook -i inventories/staging_inventory.ini ansible/playbooks/deploy.yml
+```
+
 2. Deploying the Application
 The deploy.yml playbook will configure the target server with Nginx, MySQL, and the Flask application.
-```
+
 
 3. Nginx Setup
 The role nginx will install and configure Nginx as a reverse proxy for the Flask application.
