@@ -3,7 +3,19 @@
 This repository contains the configuration files and deployment scripts necessary to set up and manage the CI/CD infrastructure for the ToDo List application in the repository:  
 🔗 [ToDo List application repository](https://github.com/netanelburkis/netanelburkis-netanel_bukris_todo_app_repu).
 
-It supports automated deployment using Jenkins and includes pre-configured scripts for launching servers running Nginx, MySQL, and the Flask-based application.
+## 🚀 Features
+- **Automated Deployment** using Jenkins
+- **Pre-configured Scripts** for Nginx, MySQL, and Flask
+- **Ansible Automation** for server setup
+
+## 🛠️ Requirements
+Before you start, make sure the following tools are installed:
+- **Jenkins** (for CI/CD pipeline)
+- **Ansible** (for automating server setup)
+- **Docker** (optional, for containerized Flask app)
+- **MySQL** (for app's database)
+- **Gunicorn** (WSGI server for Flask)
+- **Nginx** (for reverse proxy)
 
 ---
 
