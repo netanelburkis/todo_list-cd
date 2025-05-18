@@ -11,6 +11,7 @@
     env:
       APP_1_HOST: "{{ app1_host }}"
       APP_2_HOST: "{{ app2_host }}"
+      #add more app_host if needed
     volumes:
       - ~/default.conf:/etc/nginx/templates/default.conf.template
     ports: "80:80"
