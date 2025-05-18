@@ -31,5 +31,5 @@ apt update -y
 apt install -y google-chrome-stable
 
 #install ansible
-apt-add-repository --yes --update ppa:ansible/ansible
-apt install -y ansible
+sudo apt-add-repository --yes --update ppa:ansible/ansible
+sudo apt install -y ansible
