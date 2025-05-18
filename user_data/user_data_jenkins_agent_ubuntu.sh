@@ -16,6 +16,7 @@ echo \
 
 apt update -y
 apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 # Add 'ubuntu' user to docker group
 usermod -aG docker ubuntu
 
