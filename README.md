@@ -46,50 +46,79 @@ This repository also includes Ansible playbooks used for automating the deployme
 
 Ansible helps automate the setup of the servers and the configuration of the application environment. It ensures that all components (e.g., Nginx, MySQL, and the Flask app) are installed and configured consistently across all environments.
 
-How to Use Ansible ⚙️
-Install Ansible (if not already installed):
+⚙️ How to Use Ansible
+1. Setup Servers Using Ansible
+First, clone this repository to your local machine or server.
 
-```bash
-sudo apt install ansible
-```
-Run the Playbooks:
-Ansible playbooks can be used to configure the servers in different environments (e.g., staging, production).
+Make sure you have an Ansible installation.
 
-For example, to configure the staging server, run:
+Run the following command to configure the servers for staging:
 
-```bash
-ansible-playbook -i staging_inventory.ini deploy.yml
-```
-Replace staging_inventory.ini with the appropriate inventory file, and deploy.yml with the playbook you want to run.
+bash
+Copy
+Edit
+ansible-playbook -i inventories/staging_inventory.ini ansible/playbooks/deploy.yml
+2. Deploying the Application
+The deploy.yml playbook will configure the target server with Nginx, MySQL, and the Flask application.
 
-Directory Structure:
+3. Nginx Setup
+The role nginx will install and configure Nginx as a reverse proxy for the Flask application.
 
-ansible/ - Contains all Ansible configuration files:
+4. MySQL Setup
+The role mysql will install MySQL, create a database, and configure a user for the application.
 
-playbooks/ - Contains the main Ansible playbooks (e.g., deploy.yml).
+5. Flask App Setup
+The role flask_app will install and configure the Flask app with Gunicorn (and optionally Docker).
 
-roles/ - Contains Ansible roles for configuring Nginx, MySQL, and the Flask app.
+🔧 Manual Server Deployment
+If you want to manually set up your server:
 
-inventories/ - Contains the server inventory files for different environments (e.g., staging_inventory.ini, production_inventory.ini).
+Launch a new server (e.g., an Ubuntu EC2 instance).
 
-Ansible Playbooks 🔧
-deploy.yml: Deploys the application on the target server, including Nginx, MySQL, and the Flask application.
+Copy and run one of the user data scripts:
 
-nginx -nginx/tasks-role: Configures Nginx as a reverse proxy for the Flask application.
+bash
+Copy
+Edit
+bash user_data/user_data_nginx.sh
+Similarly, you can run the MySQL and Flask app scripts:
 
-mysql -db/tasks-role: Installs MySQL, creates a database, and configures a user for the application.
+bash
+Copy
+Edit
+bash user_data/user_data_mysql.sh
+bash user_data/user_data_app.sh
+📚 Troubleshooting
+Problem: MySQL connection fails after deployment.
 
-flask_app -app/tasks-role: Sets up the Flask application (with Gunicorn) and optionally uses Docker.
+Solution: Check if MySQL is properly configured in user_data_mysql.sh and ensure the correct database and user permissions are set.
 
-By using these Ansible playbooks, you can easily automate the entire deployment and configuration process for all your environments.
+Problem: Nginx is not forwarding requests to Flask.
 
----
+Solution: Ensure that the Nginx config file is correctly pointing to the Flask application (e.g., Gunicorn socket).
 
-## How to Use🛠️
+🔄 Version Management
+The versions of the application deployed in Staging and Production environments are tracked in the following files:
 
-### Manual Server Deployment🚀
+production_version.txt: Contains the current commit hash or version tag in the Production environment.
 
-1. Launch a new server (e.g., Ubuntu EC2).
-2. Copy and run one of the user data scripts:
-   ```bash
-   bash user_data/user_data_nginx.sh
+stage_version.txt: Contains the version currently running in the Staging environment.
+
+📥 Notifications (Jenkins)
+Jenkins can notify you upon successful or failed pipeline stages using Slack or Email integrations.
+
+Make sure to configure the appropriate Slack webhook or Email notification in Jenkins.
+
+🔒 Security Considerations
+Nginx: Make sure to secure your Nginx server with SSL certificates, using Let's Encrypt or another trusted provider.
+
+MySQL: Use strong passwords for MySQL users and avoid running MySQL as root.
+
+💬 Additional Resources
+Jenkins Documentation
+
+Ansible Documentation
+
+Flask Documentation
+
+MySQL Documentation
