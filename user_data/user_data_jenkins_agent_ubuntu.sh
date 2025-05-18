@@ -29,3 +29,7 @@ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux.gpg] https://dl
   | tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
 apt update -y
 apt install -y google-chrome-stable
+
+#install ansible
+apt-add-repository --yes --update ppa:ansible/ansible
+apt install -y ansible
