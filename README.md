@@ -46,7 +46,8 @@ This repository also includes Ansible playbooks used for automating the deployme
 
 Ansible helps automate the setup of the servers and the configuration of the application environment. It ensures that all components (e.g., Nginx, MySQL, and the Flask app) are installed and configured consistently across all environments.
 
-Jenkins & Ansible Integration
+### Jenkins & Ansible Integration
+
 This repository contains two Jenkinsfiles for different deployment strategies:
 
 Jenkinsfile – This file is responsible for deploying the application to Staging and Production environments using Docker. It handles version management through stage_version.txt and production_version.txt files.
