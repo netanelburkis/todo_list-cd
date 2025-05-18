@@ -54,12 +54,11 @@ Make sure you have an Ansible installation.
 
 Run the following command to configure the servers for staging:
 
-bash
-Copy
-Edit
+```bash
 ansible-playbook -i inventories/staging_inventory.ini ansible/playbooks/deploy.yml
 2. Deploying the Application
 The deploy.yml playbook will configure the target server with Nginx, MySQL, and the Flask application.
+```
 
 3. Nginx Setup
 The role nginx will install and configure Nginx as a reverse proxy for the Flask application.
@@ -76,18 +75,15 @@ If you want to manually set up your server:
 Launch a new server (e.g., an Ubuntu EC2 instance).
 
 Copy and run one of the user data scripts:
-
-bash
-Copy
-Edit
+```bash
 bash user_data/user_data_nginx.sh
+```
 Similarly, you can run the MySQL and Flask app scripts:
-
-bash
-Copy
-Edit
+```bash
 bash user_data/user_data_mysql.sh
 bash user_data/user_data_app.sh
+```
+
 📚 Troubleshooting
 Problem: MySQL connection fails after deployment.
 
@@ -115,6 +111,7 @@ Nginx: Make sure to secure your Nginx server with SSL certificates, using Let's 
 MySQL: Use strong passwords for MySQL users and avoid running MySQL as root.
 
 💬 Additional Resources
+
 [Jenkins Documentation](https://www.jenkins.io/doc/)
 
 [Ansible Documentation](https://docs.ansible.com/)
