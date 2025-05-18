@@ -115,10 +115,12 @@ Nginx: Make sure to secure your Nginx server with SSL certificates, using Let's 
 MySQL: Use strong passwords for MySQL users and avoid running MySQL as root.
 
 💬 Additional Resources
-Jenkins Documentation
+[Jenkins Documentation](https://www.jenkins.io/doc/)
 
-Ansible Documentation
+[Ansible Documentation](https://docs.ansible.com/)
 
-Flask Documentation
+[Flask Documentation](https://flask.palletsprojects.com/en/stable/)
 
-MySQL Documentation
+[MySQL Documentation](https://dev.mysql.com/doc/)
+
+By following this guide, you should be able to quickly set up and manage the CI/CD infrastructure for your ToDo List application. Feel free to contribute or open issues if you encounter any problems!
