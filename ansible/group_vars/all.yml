@@ -1,5 +1,5 @@
 app_image: netanelbukris/to_do_list
-prod_tag: 9
+prod_tag: 10
 stage_tag: 10
 
 db_image: mysql
