@@ -1,5 +1,8 @@
 #!bin/bash
 
+# ⚠️ Use this section of this user data only when provisioning manually.
+# Do not use with Ansible/Ansible-jenkinsfile – may cause conflicts.
+
 # Add Docker's official GPG key:
 apt-get update -y
 apt-get install -y ca-certificates curl
