@@ -1,11 +1,11 @@
-- name: run app container
-  docker_container:
-    name: app
-    image: "{{ app_image }}:{{ app_tag }}"
-    restart_policy: always
-    env:
-      DB_HOST: "{{ db_host }}"
-      DB_NAME: "{{ db_name }}"
-      DB_USER: "{{ db_user }}"
-      DB_PASSWORD: "{{ db_password }}"
-    ports: "5000:5000"
+    - name: run app container
+      docker_container:
+        name: app
+        image: "{{ app_image }}:{{ app_tag }}"
+        restart_policy: always
+        env:
+          DB_HOST: "{{ db_host }}"
+          DB_NAME: "{{ db_name }}"
+          DB_USER: "{{ db_user }}"
+          DB_PASSWORD: "{{ db_password }}"
+        ports: "5000:5000"
