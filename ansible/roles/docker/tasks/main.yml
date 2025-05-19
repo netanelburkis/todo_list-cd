@@ -1,11 +1,11 @@
-- name: install docker
-  apt:
-    name:
-      - docker.io
-    update_cache: yes
-
-- name: Add ubuntu user to docker group
-  user:
-      name: "{{ user }}"
-      groups: docker
-      append: yes
+    - name: install docker
+      apt:
+        name:
+          - docker.io
+        update_cache: yes
+    
+    - name: Add ubuntu user to docker group
+      user:
+          name: "{{ user }}"
+          groups: docker
+          append: yes
