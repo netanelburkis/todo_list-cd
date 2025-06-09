@@ -74,22 +74,23 @@ Terraform files provision AWS infrastructure resources needed for the ToDo List 
 - Variables Management (vars.tf): Central configuration variables
 
 **How to Use Terraform**
-1.Initialize Terraform:
+
+1. Initialize Terraform:
 ```bash
 terraform init
 ```
 
-2.Review the execution plan:
+2. Review the execution plan:
 ```bash
 terraform plan -var-file="vars.tfvars"
 ```
 
-3.Apply the configuration:
+3. Apply the configuration:
 ```bash
 terraform apply -var-file="vars.tfvars"
 ```
 
-4.Destroy the infrastructure (optional):
+4. Destroy the infrastructure (optional):
 ```bash
 terraform destroy -var-file="vars.tfvars"
 ```
