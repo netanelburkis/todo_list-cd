@@ -57,7 +57,7 @@ ansible-playbook -i inventories/staging_inventory.ini ansible/playbooks/deploy.y
 ### 5. Terraform Infrastructure & Infrastructure as Code 🏗️
 Terraform files provision AWS infrastructure resources needed for the ToDo List app and CI/CD environment.
 
-Includes:
+**Includes:**
 
 - VPC and networking setup
 - EC2 instances for Jenkins agents and app servers
