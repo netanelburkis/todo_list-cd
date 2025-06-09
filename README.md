@@ -7,6 +7,7 @@ This repository contains the configuration files and deployment scripts necessar
 - **Automated Deployment** using Jenkins
 - **Pre-configured Scripts** for Nginx, MySQL, and Flask
 - **Ansible Automation** for server setup
+- **Infrastructure as Code** with Terraform for AWS resources
 
 ## 🛠️ Requirements
 Before you start, make sure the following tools are installed:
@@ -16,6 +17,7 @@ Before you start, make sure the following tools are installed:
 - **MySQL** (for app's database)
 - **Gunicorn** (WSGI server for Flask)
 - **Nginx** (for reverse proxy)
+- **Terraform** (for infrastructure provisioning)
 
 ---
 
@@ -28,6 +30,7 @@ Before you start, make sure the following tools are installed:
   - Build
   - Deploy to Staging and Production
   - Notifications (e.g., Slack / Email)
+  - Jenkinsfile-ansible – Deploys the application using Ansible when files in the ansible/ directory change.
 
 ### 2. Application Setup (Nginx, MySQL, Flask)🧰
 
@@ -42,9 +45,65 @@ Before you start, make sure the following tools are installed:
 - `stage_version.txt` – A text file with the version currently running in the **Staging** environment.
 
 ### 4. Ansible Configuration 🛠️
-This repository also includes Ansible playbooks used for automating the deployment and configuration of the servers required for the ToDo List application.
+This repository includes Ansible playbooks that automate the deployment and configuration of servers for the ToDo List application.
 
-Ansible helps automate the setup of the servers and the configuration of the application environment. It ensures that all components (e.g., Nginx, MySQL, and the Flask app) are installed and configured consistently across all environments.
+Ansible ensures consistent installation and setup of all components like Nginx, MySQL, and the Flask app across environments.
+
+To deploy on staging servers, run:
+```bash
+ansible-playbook -i inventories/staging_inventory.ini ansible/playbooks/deploy.yml
+```
+
+### 5. Terraform Infrastructure & Infrastructure as Code 🏗️
+Terraform files provision AWS infrastructure resources needed for the ToDo List app and CI/CD environment.
+
+Includes:
+
+- VPC and networking setup
+- EC2 instances for Jenkins agents and app servers
+- Application Load Balancer (ALB) for distributing traffic
+- Route53 DNS configuration
+- Variables defined in vars.tf
+
+**Terraform Components**
+
+- VPC: Custom Virtual Private Cloud for network isolation
+- EC2 Instances: Virtual machines for Jenkins agents and the ToDo List app
+- Application Load Balancer (ALB): Distributes incoming traffic to EC2 instances
+- DNS Configuration: Route53 records for the ALB domain
+- Variables Management (vars.tf): Central configuration variables
+
+**How to Use Terraform**
+1.Initialize Terraform:
+```bash
+terraform init
+```
+
+2.Review the execution plan:
+```bash
+terraform plan -var-file="vars.tfvars"
+```
+
+3.Apply the configuration:
+```bash
+terraform apply -var-file="vars.tfvars"
+```
+
+4.Destroy the infrastructure (optional):
+```bash
+terraform destroy -var-file="vars.tfvars"
+```
+
+You can use the `-auto-approve` flag to skip the confirmation prompt.
+
+**File	Description**
+- main.tf	Defines main AWS resources: VPC, EC2, ALB
+- alb.tf	Application Load Balancer configuration
+- dns.tf	Route53 DNS records for ALB domain
+- ec2.tf	EC2 instance and security groups setup
+- vpc.tf	VPC, subnets, internet gateway, route tables
+- vars.tf	Variables used throughout Terraform configuration
+- outputs.tf	Outputs like ALB DNS name, instance IP addresses
 
 ### Jenkins & Ansible Integration
 
