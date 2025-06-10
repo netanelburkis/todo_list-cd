@@ -1,0 +1,9 @@
+aws_region = "eu-central-1"
+dns_address = "yp3yp3.online"
+ami_id = "ami-03250b0e01c28d196" # Example AMI ID, replace with a valid one for your region
+vpc_cidr = "10.0.0.0/16"
+app_instance_count = 2
+app_port = 5000
+app_name = "todo-list"
+sub_domain = "todo"
+key_name = "frankfurt"

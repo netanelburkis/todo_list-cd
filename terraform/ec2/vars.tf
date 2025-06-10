@@ -1,49 +1,53 @@
 variable "aws_region" {
-  type        = string
-  default     = "eu-central-1"
+  type    = string
+  default = "eu-central-1"
 }
 
 variable "instance_type" {
-  type        = string
-  default     = "t2.micro"   
+  type    = string
+  default = "t2.micro"
 }
 
 variable "ami_id" {
-  type        = string
-  default     = "ami-03250b0e01c28d196"
+  type    = string
+  default = "ami-03250b0e01c28d196" # Example AMI ID, replace with a valid one for your region
 }
 
 variable "tags" {
-  type        = map(string)
-  default     = {}
+  type = map(string)
+  default = {}
 }
 
-variable "subnet_ids" {
-  type        = list(string)
+variable "subnets_ids" {
+  type = list(string)
 }
 
-variable "count" {
-  type        = number
-  default     = 1
+variable "instances_count" {
+  type    = number
+  default = 1
 }
 
 variable "sg_name" {
-  type        = string
+  type    = string
 }
 
 variable "ec2_name" {
-  type        = string
-  default     = "my-ec2-instance" 
-}
-
-variable "vpc_id" {
-  type        = string
+  type    = string
+  default = "my-ec2-instance"
 }
 
 variable "port_to_open" {
-  type        = number
+  type    = number
 }
 
-variable "address_to_open" {
-  type        = string
+variable "adress_to_open" {
+  type    = string
+}
+
+variable "vpc_id" {
+  type = string
+}
+
+variable "key_name1" {
+  type    = string
 }

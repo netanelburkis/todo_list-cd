@@ -1,29 +1,29 @@
 variable "aws_region" {
-  type        = string
-  default     = "eu-central-1"
+  type    = string
+  default = "eu-central-1"
 }
 
 variable "dns_address" {
-  type        = string
+  type    = string
 }
 
 variable "ami_id" {
-  type        = string
-  default     = "ami-03250b0e01c28d196"
+  type    = string
+  default = "ami-03250b0e01c28d196" # Example AMI ID, replace with a valid one for your region
 }
 
 variable "vpc_cidr" {
-  type        = string
-  default     = "10.0.0.0/16"
+  type    = string
+  default = "10.0.0.0/16"
 }
 
 variable "app_instance_count" {
-  type        = number
-  default     = 1
+  type    = number
+  default = 1
 }
 
 variable "app_port" {
-  type        = number
+  type    = number
 }
 
 variable "app_name" {

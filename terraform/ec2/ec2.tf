@@ -1,20 +1,21 @@
-provider "aws" {
-  region = var.aws_region 
+provider aws {
+  region = var.aws_region
 }
 
 resource "aws_instance" "ec2_instance" {
-  count         = var.count
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  subnet_id     = var.subnet_ids[count.index]
-  vpc_security_group_ids = aws_security_group.ec2_sg.id
-  tags = merge(
+  count             = var.instances_count
+  ami               = var.ami_id
+  instance_type    = var.instance_type
+  subnet_id        = var.subnets_ids[count.index]
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+  key_name         = var.key_name1
+  tags =   merge(
     {
-      "Name" = "${var.ec2_name}-${count.index + 1}"
+      Name = "${var.ec2_name}-${count.index + 1}"
     },
     var.tags
   )
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -26,22 +27,21 @@ resource "aws_security_group" "ec2_sg" {
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = var.port_to_open
+    from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.address_to_open]
+    cidr_blocks = [var.adress_to_open]
   }
-
   ingress {
     from_port   = var.port_to_open
     to_port     = var.port_to_open
     protocol    = "tcp"
-    cidr_blocks = [var.address_to_open]
+    cidr_blocks = [var.adress_to_open]
   }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+    egress {
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
 }
