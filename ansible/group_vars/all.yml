@@ -14,14 +14,14 @@ nginx_tag: latest
 
 #if needed: nginx_host: "{{ hostvars['nginx1'].ansible_host }}"
 
-db_host: "{{ hostvars['db1'].ansible_host }}"
+db_host: "{{ hostvars['todo-list_DB-1'].ansible_host }}"
 
 #production
-app_1: "{{ hostvars['app1'].ansible_host }}"
-#if needed add in inventory.ini: app_2: "{{ hostvars['app2'].ansible_host }}"
+app_1: "{{ hostvars['todo-list_APP-1'].ansible_host }}"
+app_2: "{{ hostvars['todo-list_APP-2'].ansible_host }}"
 #add if need more and add in inventory.ini
 
-stage_host: "{{ hostvars['stage1'].ansible_host }}"
+stage_host: "{{ hostvars['todo-list_stage-1'].ansible_host }}"
 #add if need more and add in inventory.ini
 
 user: "{{ ansible_user }}"

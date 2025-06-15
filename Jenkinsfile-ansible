@@ -5,6 +5,62 @@ pipeline {
     }
 
     stages {
+
+        stage('Deploy with Terraform') {
+            when {
+                changeset "terraform/**"  // Trigger this stage only if there are changes in the Terraform files
+            }
+            steps {
+                // Using the withAWS plugin, there's no need to specify credentials in the Terraform files.
+                // The plugin provides the credentials to the AWS CLI in the environment, and Terraform can access them from environment variables.
+                // Alternatively, you can assign a role to the Jenkins instance to manage EC2, DNS, ALB, and other resources.
+                withAWS(credentials: 'aws') {
+                    sh '''
+                        cd terraform
+                        terraform init
+                        terraform plan
+                        terraform apply -auto-approve
+                    '''
+                }
+            }
+        }
+
+        stage('DEBUG git diff') {
+            steps {
+                sh '''
+                    cd ansible
+                    git status
+                    git status --porcelain inventory.ini
+                '''
+            }
+        }
+
+        stage('Push updated inventory to Git') {
+            when {
+                expression {
+                    return sh(script: '''
+                        cd ansible
+                        git status --porcelain inventory.ini | grep inventory.ini > /dev/null
+                    ''', returnStatus: true) == 0
+                }
+            }
+
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'Branch_Sources_GitHub_Credentials', passwordVariable: 'GH_PASSWORD', usernameVariable: 'GH_USERNAME')]) {
+                    sh '''
+                        cd ansible
+
+                        git config user.name "jenkins"
+                        git config user.email "ci@company.com"
+                        git checkout main
+                        git add inventory.ini
+                        git commit -m "🔄 Update inventory from Terraform"
+                        git push https://${GH_USERNAME}:${GH_PASSWORD}@github.com/netanelburkis/todo_list-cd main
+                    '''
+                }
+            }
+        }    
+
         stage('Deploy with ansible') {
             when { changeset "ansible/**" }
             steps {
