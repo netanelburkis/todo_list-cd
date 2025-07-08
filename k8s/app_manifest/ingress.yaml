@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  creationTimestamp: null
+  name: todo
+spec:
+  rules:
+  - host: todo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: todo_svc
+            port:
+              number: 5000
+        path: /
+        pathType: Prefix
+  - host: stage.todo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: todo_stage_svc
+            port:
+              number: 5000
+        path: /
+        pathType: Prefix
+status:
+  loadBalancer: {}

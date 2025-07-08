@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  APP_1_HOST: {{ .Values.app.Service.name }}
+  DB_HOST: {{ .Values.mysql.service.name }}
+  MYSQL_DATABASE: {{ .Values.mysql.database  }}
+  MYSQL_USER: {{ .Values.mysql.user }}
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: {{ .Values.global.ConfigMap_name }}

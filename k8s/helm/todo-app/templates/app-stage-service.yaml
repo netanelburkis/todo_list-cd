@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: todo-app-stage
+  name: {{ .Values.app_stage.Service.name }}
+spec:
+  ports:
+  - port: {{ .Values.app_stage.Service.port }}
+    protocol: TCP
+    targetPort: {{ .Values.app_stage.Service.port }}
+  selector:
+    app: todo-app-stage
+  type: {{ .Values.app_stage.Service.type | default "ClusterIP" }}
+status:
+  loadBalancer: {}

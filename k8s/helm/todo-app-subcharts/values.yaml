@@ -1,0 +1,31 @@
+global:
+  Secret_name: todo-app
+  ConfigMap_name: todo-app
+app:
+  Deployment:
+    replicas: 2
+    min: 2
+    max: 10
+    cpu: 60
+    image: netanelbukris/to_do_list
+    tag: latest
+  Service:
+    type: ClusterIP
+    port: 5000
+    name: todo-svc
+mysql:
+  pvc:
+    storageClassName: gp2
+    storage: 500Mi
+  root_password: cGFzc3dvcmQ=
+  user: user
+  password: cGFzcw==
+  database: todo_db
+  host: mysql-service
+  image_version: 8.0
+  service:
+    port: 3306
+    name: mysql-svc
+ingress:
+  app_host: bybukris.netaneltodolist.wuaze.com
+  ingressClassName: nginx

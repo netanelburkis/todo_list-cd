@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: todo-app-stage
+  name: todo-app-stage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app-stage
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: todo-app-stage
+    spec:
+      containers:
+      - image: "{{ .Values.app_stage.Deployment.image }}:{{ .Values.app_stage.Deployment.tag }}"
+        name: to-do-list-stage
+        resources: {}
+        env:
+         - name: DB_HOST
+           valueFrom:
+             configMapKeyRef:
+               name: {{ .Values.mysql.ConfigMap_name }}
+               key: DB_HOST
+         - name: DB_NAME
+           valueFrom:
+             configMapKeyRef:
+               name: {{ .Values.mysql.ConfigMap_name }}
+               key: MYSQL_DATABASE
+         - name: DB_USER
+           valueFrom:
+             configMapKeyRef:
+               name: {{ .Values.mysql.ConfigMap_name }}
+               key: MYSQL_USER
+         - name: DB_PASSWORD
+           valueFrom:
+             secretKeyRef:
+               name: {{ .Values.mysql.Secret_name }}
+               key: MYSQL_PASSWORD
+status: {}

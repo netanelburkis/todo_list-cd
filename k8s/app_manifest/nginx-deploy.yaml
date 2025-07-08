@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx
+    spec:
+      volumes:
+       - name: nginx-config
+         configMap:
+           name: todo_app
+           items:
+            - key: default.conf
+              path: default.conf
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+        volumeMounts:
+         - name: nginx-config
+           mountPath: /etc/nginx/templates/default.conf.template
+           subPath: default.conf
+        env:
+         - name: APP_1_HOST
+           valueFrom:
+             configMapKeyRef:
+               name: todo_app
+               key: APP_1_HOST
+         - name: APP_2_HOST
+           valueFrom:
+             configMapKeyRef:
+               name: todo_app
+               key: APP_1_HOST
+status: {}

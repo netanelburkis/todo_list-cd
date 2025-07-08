@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: todo_app
+  name: todo_app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo_app
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: todo_app
+    spec:
+      containers:
+      - image: netanelbukris/to_do_list
+        name: to-do-list-dltxt
+        resources: {}
+        env:
+         - name: DB_HOST
+           valueFrom:
+             configMapKeyRef:
+               name: todo_app
+               key: DB_HOST
+         - name: DB_NAME
+           valueFrom:
+             configMapKeyRef:
+               name: todo_app
+               key: MYSQL_DATABASE
+         - name: DB_USER
+           valueFrom:
+             configMapKeyRef:
+               name: todo_app
+               key: MYSQL_USER
+         - name: DB_PASSWORD
+           valueFrom:
+             secretKeyRef:
+               name: todo_app
+               key: MYSQL_PASSWORD
+status: {}

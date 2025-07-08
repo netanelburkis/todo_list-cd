@@ -1,0 +1,13 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  creationTimestamp: null
+  name: todo-app
+spec:
+  maxReplicas: {{ .Values.app.Deployment.max | default 10 }}
+  minReplicas: {{ .Values.app.Deployment.min | default 2 }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: todo-app
+  targetCPUUtilizationPercentage: {{ .Values.app.Deployment.cpu | default 50 }}

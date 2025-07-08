@@ -1,0 +1,288 @@
+apiVersion: v1
+data:
+  APP_1_HOST: todo-svc
+  DB_HOST: mysql-svc
+  MYSQL_DATABASE: todo
+  MYSQL_USER: myuser
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: todo-app
+---
+apiVersion: v1
+data:
+  MYSQL_PASSWORD: cGFzcw==
+  MYSQL_ROOT_PASSWORD: cGFzc3dvcmQ=
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: todo-app
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-mysql
+spec:
+  storageClassName: gp2
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mysql
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mysql
+    spec:
+      volumes:
+        - name: mysql-pvc
+          persistentVolumeClaim:
+            claimName: pvc-mysql
+      containers:
+      - image: mysql:8.0
+        name: mysql
+        resources: {}
+        volumeMounts:
+         - name: mysql-pvc
+           mountPath: /var/lib/mysql
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: todo-app
+                key: MYSQL_ROOT_PASSWORD
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: todo-app
+                key: MYSQL_PASSWORD
+          - name: MYSQL_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: todo-app
+                key: MYSQL_DATABASE
+          - name: MYSQL_USER
+            valueFrom:
+              configMapKeyRef:
+                name: todo-app
+                key: MYSQL_USER
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mysql
+  name: mysql-svc
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: mysql
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: todo-app
+  name: todo-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo-app
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: todo-app
+    spec:
+      containers:
+      - image: netanelbukris/to_do_list
+        name: to-do-list-dltxt
+        resources:
+          requests:
+            cpu: 500m
+          limits:
+            cpu: 1000m
+        env:
+         - name: DB_HOST
+           valueFrom:
+             configMapKeyRef:
+               name: todo-app
+               key: DB_HOST
+         - name: DB_NAME
+           valueFrom:
+             configMapKeyRef:
+               name: todo-app
+               key: MYSQL_DATABASE
+         - name: DB_USER
+           valueFrom:
+             configMapKeyRef:
+               name: todo-app
+               key: MYSQL_USER
+         - name: DB_PASSWORD
+           valueFrom:
+             secretKeyRef:
+               name: todo-app
+               key: MYSQL_PASSWORD
+status: {}
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  creationTimestamp: null
+  name: todo-app
+spec:
+  maxReplicas: 10
+  minReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: todo-app
+  targetCPUUtilizationPercentage: 50
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: todo-app
+  name: todo-svc
+spec:
+  ports:
+  - port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: todo-app
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: todo-app-stage
+  name: todo-app-stage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app-stage
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: todo-app-stage
+    spec:
+      containers:
+      - image: netanelbukris/to_do_list:2
+        name: to-do-list-stage
+        resources: {}
+        env:
+         - name: DB_HOST
+           valueFrom:
+             configMapKeyRef:
+               name: todo-app
+               key: DB_HOST
+         - name: DB_NAME
+           valueFrom:
+             configMapKeyRef:
+               name: todo-app
+               key: MYSQL_DATABASE
+         - name: DB_USER
+           valueFrom:
+             configMapKeyRef:
+               name: todo-app
+               key: MYSQL_USER
+         - name: DB_PASSWORD
+           valueFrom:
+             secretKeyRef:
+               name: todo-app
+               key: MYSQL_PASSWORD
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: todo-app-stage
+  name: todo-stage-svc
+spec:
+  ports:
+  - port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: todo-app-stage
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  creationTimestamp: null
+  name: todo
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: bybukris.netaneltodolist.wuaze.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: todo-svc
+            port:
+              number: 5000
+        path: /
+        pathType: Prefix
+      - backend:
+          service:
+            name: todo-stage-svc
+            port:
+              number: 5000
+        path: /stage
+        pathType: Prefix
+  - host: stage.netaneltodolist.wuaze.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: todo-stage-svc
+            port:
+              number: 5000
+        path: /
+        pathType: Prefix
+status:
+  loadBalancer: {}
