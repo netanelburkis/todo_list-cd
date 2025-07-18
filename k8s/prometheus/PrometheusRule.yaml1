@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: app-alerts
+  labels:
+    release: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  groups:
+  - name: flask.rules
+    rules:
+    - alert: HighRequestRate
+      expr: rate(flask_http_request_total[1m]) > 1
+      for: 10s
+      labels:
+        severity: warning
+    - alert: MysqlHighConnections
+      expr: mysql_global_status_threads_connected > 100
+      for: 1m
+      labels:
+        severity: critical

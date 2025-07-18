@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: todo-prod
+spec:
+  destination:
+    namespace: todo-prod
+    server: https://kubernetes.default.svc
+  source:
+    path: k8s/helm/todo-app-subcharts
+    repoURL: https://github.com/netanelburkis/todo_list-cd.git
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

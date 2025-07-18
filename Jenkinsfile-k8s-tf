@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+    parameters {
+        choice (name: 'Terraform_action',
+        choices: ['plan', 'apply', 'destroy'],
+        description: 'Select deployment type')
+    }
+    stages {
+        stage('terraform init') {
+            steps {
+                withAWS(credentials: 'aws') {
+                    sh '''
+                        cd k8s/terraform
+                        terraform init
+                    '''
+                }
+            }
+        }
+        stage('terraform actions') {
+            steps {
+                withAWS(credentials: 'aws') {
+                    script {
+                        def action = params.Terraform_action
+                        if (action == 'plan') {
+                            sh '''
+                                cd k8s/terraform
+                                terraform plan
+                            '''
+                        } else if (action == 'apply') {
+                            sh '''
+                                cd k8s/terraform
+                                terraform apply -auto-approve
+                            '''
+                        } else if (action == 'destroy') {
+                            sh '''
+                                cd k8s/terraform
+                                terraform destroy -auto-approve
+                            '''
+                        } else {
+                            error "Invalid Terraform action: ${action}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

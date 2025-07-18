@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-exporter
+  namespace: todo-stage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-exporter
+  template:
+    metadata:
+      labels:
+        app: mysql-exporter
+    spec:
+      containers:
+        - name: mysql-exporter
+          image: prom/mysqld-exporter:v0.17.2   # ← עם v
+          ports:
+            - containerPort: 9104
+          env:
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todo-app
+                  key: MYSQL_PASSWORD
+            - name: MYSQLD_EXPORTER_PASSWORD   # כך ה-exporter מצפה לקבל את הסיסמה
+              valueFrom:
+                secretKeyRef:
+                  name: todo-app
+                  key: MYSQL_PASSWORD
+          command:
+            - /bin/sh
+            - -c
+            - |
+              exec mysqld_exporter \
+                   --mysqld.address=mysql-svc:3306 \
+                   --mysqld.username="$MYSQL_USER"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-exporter
+  labels:
+    app: mysql-exporter
+  namespace: todo-stage
+spec:
+  ports:
+  - port: 9104
+    name: http
+  selector:
+    app: mysql-exporter
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mysql-exporter
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+    - todo-stage
+  selector:
+    matchLabels:
+      app: mysql-exporter
+  endpoints:
+  - port: http
+    interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: kube-prometheus-stack
+  name: todo-stage
+  namespace: monitoring
+spec:
+  endpoints:
+  - port: http
+  namespaceSelector:
+    matchNames:
+    - todo-stage
+  selector:
+    matchLabels:
+      app: todo-app

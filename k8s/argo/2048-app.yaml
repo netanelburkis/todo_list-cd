@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: '2048'
+spec:
+  destination:
+    namespace: '2048'
+    server: https://kubernetes.default.svc
+  source:
+    path: ''
+    repoURL: https://devpro.github.io/helm-charts
+    targetRevision: 0.1.1
+    chart: game-2048
+    helm:
+      parameters:
+        - name: ingress.tls.secretName
+          value: 'null'
+        - name: ingress.enabled
+          value: 'true'
+        - name: ingress.host
+          value: 2048.netanelbukris.site
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
