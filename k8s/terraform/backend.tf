@@ -1,6 +1,6 @@
 terraform {
 backend "s3" {
-  bucket         = "my-terraform-state-bucket985789345"
+  bucket         = "my-terraform-state-bucket-todo-list-cd-by-nb"
   key            = "terraform/state"
   region         = "eu-central-1"
   dynamodb_table = "terraform_state_lock"

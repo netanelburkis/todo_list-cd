@@ -59,6 +59,7 @@ module "eks" {
     aws-ebs-csi-driver = {
       service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
     }
+    metrics-server = {}
   }
 
   vpc_id     = module.vpc.vpc_id
@@ -73,14 +74,17 @@ module "eks" {
     one = {
       name = "node-group-1"
 
-      instance_types = ["t3.small"]
+      instance_types = ["t3.medium"]
 
-      min_size     = 1
-      max_size     = 3
-      desired_size = 2
+      min_size     = 3
+      max_size     = 4
+      desired_size = 3
+      
     }
-
+    lifecycle = {
+      ignore_changes = []
   }
+}
 }
 
 
